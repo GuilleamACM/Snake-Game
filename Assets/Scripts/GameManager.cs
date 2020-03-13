@@ -12,19 +12,25 @@ public class GameManager : MonoBehaviour
     Node playerCurrentNode;
     Direction playerCurrentDirection;
     bool up, left, right, down;
-
     float timer;
+
+    [Header("Props Settings")]
+    public Color appleColor = Color.red;
+    GameObject appleGameObject;
+    Node appleNode;
 
     [Header("Map Settings")]
     public int mapHeight = 15;
     public int mapWidth = 17;
     public Color mapColor1;
     public Color mapColor2;
-
-    public Transform camera;
     GameObject mapGameObject;
     SpriteRenderer mapRenderer;
     Node[,] mapGrid;
+    List<Node> avaliableNodes = new List<Node>();
+
+    [Header("Camera Settings")]
+    public Transform camera;
 
     public enum Direction
     {
@@ -40,6 +46,7 @@ public class GameManager : MonoBehaviour
         CreateMap();
         PlacePlayer();
         PlaceCamera();
+        CreateApple();
         playerCurrentDirection = Direction.right;
     }
 
@@ -51,6 +58,15 @@ public class GameManager : MonoBehaviour
         playerRender.sortingOrder = 1;
         playerCurrentNode = GetNode(3, 3);
         playerGameObject.transform.position = playerCurrentNode.worldPosition;
+    }
+
+    void CreateApple()
+    {
+        appleGameObject = new GameObject("Apple");
+        SpriteRenderer appleRenderer = appleGameObject.AddComponent<SpriteRenderer>();
+        appleRenderer.sprite = CreateSprite(appleColor);
+        appleRenderer.sortingOrder = 1;
+        RandomlyPlaceApple();
     }
 
     void CreateMap()
@@ -74,7 +90,7 @@ public class GameManager : MonoBehaviour
                     worldPosition = vector
                 };
                 mapGrid[x, y] = node;
-
+                avaliableNodes.Add(node);
                 #region Map Visual
                 if (x % 2 != 0)
                 {
@@ -169,8 +185,30 @@ public class GameManager : MonoBehaviour
         Node targetNode = GetNode(playerCurrentNode.x + x, playerCurrentNode.y + y);
         if (targetNode != null)
         {
+            bool score = false;
+            if(targetNode == appleNode)
+            {
+                score = true;
+            }
+
+            avaliableNodes.Remove(playerCurrentNode);
             playerGameObject.transform.position = targetNode.worldPosition;
             playerCurrentNode = targetNode;
+            avaliableNodes.Add(playerCurrentNode);
+
+            //Move tail
+
+            if (score)
+            {
+                if (avaliableNodes.Count > 0)
+                {
+                    RandomlyPlaceApple();
+                }
+                else
+                {
+                    //You Won
+                }
+            }
         }
         else
         {
@@ -200,6 +238,14 @@ public class GameManager : MonoBehaviour
         texture.Apply();
         Rect rect = new Rect(0, 0, 1, 1);
         return Sprite.Create(texture, rect, Vector2.zero, 1, 0, SpriteMeshType.FullRect);
+    }
+
+    void RandomlyPlaceApple()
+    {
+        int random = Random.RandomRange(0, avaliableNodes.Count);
+        Node node = avaliableNodes[random];
+        appleGameObject.transform.position = node.worldPosition;
+        appleNode = node;
     }
 
     Node GetNode(int x, int y)

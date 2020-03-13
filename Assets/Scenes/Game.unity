@@ -150,7 +150,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerColor: {r: 0.14818443, g: 0.30927292, b: 0.6981132, a: 1}
-  moveRate: 0.25
+  moveRate: 0.2
+  appleColor: {r: 1, g: 0, b: 0, a: 1}
   mapHeight: 15
   mapWidth: 17
   mapColor1: {r: 0.67058825, g: 0.8980393, b: 0.3254902, a: 1}
