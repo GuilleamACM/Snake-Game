@@ -130,6 +130,7 @@ GameObject:
   m_Component:
   - component: {fileID: 193314113}
   - component: {fileID: 193314112}
+  - component: {fileID: 193314114}
   m_Layer: 0
   m_Name: Game Manager
   m_TagString: Untagged
@@ -149,7 +150,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8b96d64eb2877743ab8f9118799d33d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerColor: {r: 0.14818443, g: 0.30927292, b: 0.6981132, a: 1}
+  playerSnake: {fileID: 193314114}
+  playerColor1: {r: 0.19157171, g: 0.27546364, b: 0.990566, a: 1}
+  playerColor2: {r: 0.22014059, g: 0.59910816, b: 0.9150943, a: 1}
   moveRate: 0.2
   appleColor: {r: 1, g: 0, b: 0, a: 1}
   mapHeight: 15
@@ -171,6 +174,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &193314114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 193314111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1632c2abbe8b0924a812fb2f21877c92, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  snakeColor1: {r: 0.19215688, g: 0.27450982, b: 0.9921569, a: 1}
+  snakeColor2: {r: 0.21960786, g: 0.6, b: 0.91372555, a: 1}
+  moveRate: 0.2
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0

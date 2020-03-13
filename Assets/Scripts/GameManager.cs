@@ -4,15 +4,8 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-
     [Header("Player Settigns")]
-    public Color playerColor;
-    [Range(0, 1)]public float moveRate = 0.5f;
-    GameObject playerGameObject;
-    Node playerCurrentNode;
-    Direction playerCurrentDirection;
-    bool up, left, right, down;
-    float timer;
+    public Snake playerSnake;
 
     [Header("Props Settings")]
     public Color appleColor = Color.red;
@@ -44,20 +37,9 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         CreateMap();
-        PlacePlayer();
+        playerSnake.CreateSnake();
         PlaceCamera();
         CreateApple();
-        playerCurrentDirection = Direction.right;
-    }
-
-    void PlacePlayer()
-    {
-        playerGameObject = new GameObject("Player");
-        SpriteRenderer playerRender = playerGameObject.AddComponent<SpriteRenderer>();
-        playerRender.sprite = CreateSprite(playerColor);
-        playerRender.sortingOrder = 1;
-        playerCurrentNode = GetNode(3, 3);
-        playerGameObject.transform.position = playerCurrentNode.worldPosition;
     }
 
     void CreateApple()
@@ -133,104 +115,8 @@ public class GameManager : MonoBehaviour
     }
     #endregion
 
-    void GetInput()
-    {
-        up = Input.GetButtonDown("Up");
-        down = Input.GetButtonDown("Down");
-        left = Input.GetButtonDown("Left");
-        right = Input.GetButtonDown("Right");
-    }
-
-    void SetPlayerDirection()
-    {
-        if (up)
-        {
-            playerCurrentDirection = Direction.up;
-        }
-        else if (down)
-        {
-            playerCurrentDirection = Direction.down;
-        }
-        else if (left)
-        {
-            playerCurrentDirection = Direction.left;
-        }
-        else if (right)
-        {
-            playerCurrentDirection = Direction.right;
-        }
-    }
-
-    void MovePlayer()
-    {
-        int x = 0;
-        int y = 0;
-
-        switch (playerCurrentDirection)
-        {
-            case Direction.up:
-                y = 1;
-                break;
-            case Direction.down:
-                y = -1;
-                break;
-            case Direction.left:
-                x = -1;
-                break;
-            case Direction.right:
-                x = 1;
-                break;
-        }
-
-        Node targetNode = GetNode(playerCurrentNode.x + x, playerCurrentNode.y + y);
-        if (targetNode != null)
-        {
-            bool score = false;
-            if(targetNode == appleNode)
-            {
-                score = true;
-            }
-
-            avaliableNodes.Remove(playerCurrentNode);
-            playerGameObject.transform.position = targetNode.worldPosition;
-            playerCurrentNode = targetNode;
-            avaliableNodes.Add(playerCurrentNode);
-
-            //Move tail
-
-            if (score)
-            {
-                if (avaliableNodes.Count > 0)
-                {
-                    RandomlyPlaceApple();
-                }
-                else
-                {
-                    //You Won
-                }
-            }
-        }
-        else
-        {
-            //Game Over
-        }
-    }
-
-    void Update()
-    {
-        GetInput();
-        SetPlayerDirection();
-
-        timer += Time.deltaTime;
-        if(timer > moveRate)
-        {
-            timer = 0;
-            MovePlayer();
-        }
-    }
-
     #region Utilities
-    Sprite CreateSprite(Color targerColor)
+    public Sprite CreateSprite(Color targerColor)
     {
         Texture2D texture = new Texture2D(1, 1);
         texture.filterMode = FilterMode.Point;
@@ -240,7 +126,7 @@ public class GameManager : MonoBehaviour
         return Sprite.Create(texture, rect, Vector2.zero, 1, 0, SpriteMeshType.FullRect);
     }
 
-    void RandomlyPlaceApple()
+    public void RandomlyPlaceApple()
     {
         int random = Random.RandomRange(0, avaliableNodes.Count);
         Node node = avaliableNodes[random];
@@ -248,7 +134,17 @@ public class GameManager : MonoBehaviour
         appleNode = node;
     }
 
-    Node GetNode(int x, int y)
+    public List<Node> GetAvaliableNodes()
+    {
+        return avaliableNodes;
+    }
+
+    public Node GetAppleNode()
+    {
+        return appleNode;
+    }
+
+    public Node GetNode(int x, int y)
     {
         if(x < 0 || x > mapWidth - 1 || y < 0 || y > mapHeight - 1)
         {
