@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class Snake : MonoBehaviour
 {
@@ -234,7 +235,9 @@ public class Snake : MonoBehaviour
         specialNode.nodeGameObject = new GameObject("Tail " + tail.Count);
         specialNode.nodeGameObject.transform.parent = tailParent.transform;
         specialNode.nodeGameObject.transform.position = specialNode.node.worldPosition;
-        specialNode.nodeGameObject.transform.localScale = Vector3.one * .95f;
+        specialNode.nodeGameObject.transform.localScale = Vector3.zero;
+        Tween tailTween = specialNode.nodeGameObject.transform.DOScale(Vector3.one * .95f, 1).SetEase(Ease.OutElastic);
+        tailTween.Play();
         SpriteRenderer r = specialNode.nodeGameObject.AddComponent<SpriteRenderer>();
         r.sortingOrder = 1;
         if (tail.Count % 2 == 0)

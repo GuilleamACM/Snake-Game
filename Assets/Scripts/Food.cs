@@ -22,8 +22,11 @@ public class Food : MonoBehaviour
         foodGameObject = Instantiate(foodGameObject);
         foodCreated = true;
         RandomlyPlaceFood();
-        Tween foodTween = foodGameObject.transform.DOShakeScale(1, .5f, 10).SetLoops(-1);
-        foodTween.Play();
+        Sequence foodSequence = DOTween.Sequence();
+        foodSequence.SetLoops(-1);
+        foodSequence.Append(foodGameObject.transform.DOShakeScale(1, .5f, 10));
+        foodSequence.Append(foodGameObject.transform.DOScale(Vector3.one, 0.2f));
+        foodSequence.Play();
     }
 
     public void RandomlyPlaceFood()
