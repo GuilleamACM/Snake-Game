@@ -13,7 +13,8 @@ public class Snake : MonoBehaviour
     GameObject tailParent;
     Node playerCurrentNode;
     List<SpecialNode> tail = new List<SpecialNode>();
-    Direction playerCurrentDirection;
+    Direction targetDirection;
+    Direction currentDirection;
     bool up, left, right, down;
     float timer;
     GameManager gameManager;
@@ -40,6 +41,7 @@ public class Snake : MonoBehaviour
         if (timer > moveRate)
         {
             timer = 0;
+            currentDirection = targetDirection;
             MovePlayer();
         }
     }
@@ -68,23 +70,19 @@ public class Snake : MonoBehaviour
     {
         if (up)
         {
-            if(!isOpposite(Direction.up))
-                playerCurrentDirection = Direction.up;
+            SetDirection(Direction.up);
         }
         else if (down)
         {
-            if (!isOpposite(Direction.down))
-                playerCurrentDirection = Direction.down;
+            SetDirection(Direction.down);
         }
         else if (left)
         {
-            if (!isOpposite(Direction.left))
-                playerCurrentDirection = Direction.left;
+            SetDirection(Direction.left);
         }
         else if (right)
         {
-            if (!isOpposite(Direction.right))
-                playerCurrentDirection = Direction.right;
+            SetDirection(Direction.right);
         }
     }
     
@@ -94,26 +92,46 @@ public class Snake : MonoBehaviour
         {
             default:
             case Direction.up:
-                if (playerCurrentDirection == Direction.down)
+                if (currentDirection == Direction.down)
                     return true;
                 else
                     return false;
             case Direction.down:
-                if (playerCurrentDirection == Direction.up)
+                if (currentDirection == Direction.up)
                     return true;
                 else
                     return false;
             case Direction.left:
-                if (playerCurrentDirection == Direction.right)
+                if (currentDirection == Direction.right)
                     return true;
                 else
                     return false;
             case Direction.right:
-                if (playerCurrentDirection == Direction.left)
+                if (currentDirection == Direction.left)
                     return true;
                 else
                     return false;
         }
+    }
+
+    void SetDirection(Direction d)
+    {
+        if (!isOpposite(d))
+        {
+            targetDirection = d;
+        }
+    }
+
+    bool isTailNode(Node n)
+    {
+        for (int i = 0; i < tail.Count; i++)
+        {
+            if(tail[i].node == n)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     void MovePlayer()
@@ -121,7 +139,7 @@ public class Snake : MonoBehaviour
         int x = 0;
         int y = 0;
 
-        switch (playerCurrentDirection)
+        switch (currentDirection)
         {
             case Direction.up:
                 y = 1;
@@ -140,35 +158,42 @@ public class Snake : MonoBehaviour
         Node targetNode = gameManager.GetNode(playerCurrentNode.x + x, playerCurrentNode.y + y);
         if (targetNode != null)
         {
-            bool score = false;
-            if (targetNode == gameManager.GetAppleNode())
+            if (isTailNode(targetNode))
             {
-                score = true;
+                //GameOver
             }
-
-            Node previousNode = playerCurrentNode;
-            gameManager.GetAvaliableNodes().Add(previousNode);
-         
-            if (score)
+            else
             {
-                tail.Add(CreateTailNode(previousNode.x, previousNode.y));
-                gameManager.GetAvaliableNodes().Remove(previousNode);
-            }
-
-            MoveTail();
-            gameManager.PlacePLayerObject(snakeGameObject, targetNode.worldPosition);
-            playerCurrentNode = targetNode;
-            gameManager.GetAvaliableNodes().Remove(playerCurrentNode);
-
-            if (score)
-            {
-                if (gameManager.GetAvaliableNodes().Count > 0)
+                bool score = false;
+                if (targetNode == gameManager.GetAppleNode())
                 {
-                    gameManager.RandomlyPlaceApple();
+                    score = true;
                 }
-                else
+
+                Node previousNode = playerCurrentNode;
+                gameManager.GetAvaliableNodes().Add(previousNode);
+
+                if (score)
                 {
-                    //You Won
+                    tail.Add(CreateTailNode(previousNode.x, previousNode.y));
+                    gameManager.GetAvaliableNodes().Remove(previousNode);
+                }
+
+                MoveTail();
+                gameManager.PlacePLayerObject(snakeGameObject, targetNode.worldPosition);
+                playerCurrentNode = targetNode;
+                gameManager.GetAvaliableNodes().Remove(playerCurrentNode);
+
+                if (score)
+                {
+                    if (gameManager.GetAvaliableNodes().Count > 0)
+                    {
+                        gameManager.RandomlyPlaceApple();
+                    }
+                    else
+                    {
+                        //You Won
+                    }
                 }
             }
         }
