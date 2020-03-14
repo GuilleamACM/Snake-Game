@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class GameManager : MonoBehaviour
 {
@@ -14,6 +15,10 @@ public class GameManager : MonoBehaviour
     int highScore;
 
     [Header("Props Settings")]
+    public int pointsToSpawnTrap;
+    private int pointsToNextTrap;
+    public Color trapColor = Color.black;
+    public ParticleSystem particle;
     public Food food;
 
     [Header("Map Settings")]
@@ -25,6 +30,7 @@ public class GameManager : MonoBehaviour
     SpriteRenderer mapRenderer;
     Node[,] mapGrid;
     List<Node> avaliableNodes = new List<Node>();
+    List<SpecialNode> traps = new List<SpecialNode>();
 
     [Header("Camera Settings")]
     public Transform cameraHolder;
@@ -71,8 +77,14 @@ public class GameManager : MonoBehaviour
             if (t != null)
                 Destroy(t.nodeGameObject);
         }
+        foreach (var item in traps)
+        {
+            if (item != null)
+                Destroy(item.nodeGameObject);
+        }
         playerSnake.tail.Clear();
         avaliableNodes.Clear();
+        traps.Clear();
         if (playerSnake != null)
             Destroy(playerSnake.tailParent);
         mapGrid = null;
@@ -201,5 +213,46 @@ public class GameManager : MonoBehaviour
     {
         isGameOver = true;
         isFirstInput = false;
+    }
+
+    public void IncreasePointsToNextTrap()
+    {
+        pointsToNextTrap++;
+        TrySpawnTrap();
+    }
+
+    public void TrySpawnTrap()
+    {
+        if(pointsToNextTrap >= pointsToSpawnTrap)
+        {
+            pointsToNextTrap = 0;
+            SpecialNode trap = new SpecialNode();
+            trap.nodeGameObject = new GameObject("Trap" + traps.Count);
+            int random = Random.Range(0, avaliableNodes.Count);
+            trap.node = GetAvaliableNodes()[random];
+            traps.Add(trap);
+            avaliableNodes.Remove(trap.node);
+            PlacePLayerObject(particle.gameObject, trap.node.worldPosition);
+            PlacePLayerObject(trap.nodeGameObject, trap.node.worldPosition);
+            trap.nodeGameObject.transform.localScale = Vector3.zero;
+            Tween trapTween = trap.nodeGameObject.transform.DOScale(Vector3.one, 1).SetEase(Ease.OutElastic);
+            trapTween.Play();
+            SpriteRenderer r = trap.nodeGameObject.AddComponent<SpriteRenderer>();
+            r.sortingOrder = 1;
+            r.sprite = CreateSprite(trapColor);
+            particle.Play();
+        }
+    }
+
+    public bool isTrapNode(Node n)
+    {
+        for (int i = 0; i < traps.Count; i++)
+        {
+            if (traps[i].node == n)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 }

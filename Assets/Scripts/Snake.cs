@@ -187,6 +187,9 @@ public class Snake : MonoBehaviour
             {
                 gameManager.onGameOver.Invoke();
             }
+            if (gameManager.isTrapNode(targetNode))
+                gameManager.onGameOver.Invoke();
+
             else
             {
                 bool score = false;
