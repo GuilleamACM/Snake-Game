@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviour
             Destroy(mapGameObject);
         if (playerSnake != null)
             Destroy(playerSnake.snakeGameObject);
-        if (food.foodGameObject != null)
+        if (food.foodCreated)
             Destroy(food.foodGameObject);
         foreach (var t in playerSnake.tail)
         {

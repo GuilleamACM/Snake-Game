@@ -5,9 +5,8 @@ using UnityEngine;
 public class Food : MonoBehaviour
 {
     [Header("Food Settings")]
-    public Color foodColor = Color.red;
-    [System.NonSerialized]
     public GameObject foodGameObject;
+    public bool foodCreated;
     Node foodNode;
 
     GameManager gm;
@@ -19,10 +18,8 @@ public class Food : MonoBehaviour
 
     public void CreateFood()
     {
-        foodGameObject = new GameObject("Food");
-        SpriteRenderer foodRenderer = foodGameObject.AddComponent<SpriteRenderer>();
-        foodRenderer.sprite = gm.CreateSprite(foodColor);
-        foodRenderer.sortingOrder = 1;
+        foodGameObject = Instantiate(foodGameObject);
+        foodCreated = true;
         RandomlyPlaceFood();
     }
 

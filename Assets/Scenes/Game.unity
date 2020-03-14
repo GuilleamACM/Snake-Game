@@ -225,8 +225,8 @@ GameObject:
   m_Component:
   - component: {fileID: 193314113}
   - component: {fileID: 193314112}
-  - component: {fileID: 193314115}
   - component: {fileID: 193314114}
+  - component: {fileID: 193314115}
   m_Layer: 0
   m_Name: Game Manager
   m_TagString: Untagged
@@ -397,6 +397,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   foodColor: {r: 1, g: 0, b: 0, a: 1}
+  foodGameObject: {fileID: 4233105086174555653, guid: 60c66a4797782cb4d9923d4cbf7fb217,
+    type: 3}
 --- !u!1 &245275045
 GameObject:
   m_ObjectHideFlags: 0
