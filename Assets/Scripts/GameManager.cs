@@ -14,9 +14,7 @@ public class GameManager : MonoBehaviour
     int highScore;
 
     [Header("Props Settings")]
-    public Color appleColor = Color.red;
-    GameObject appleGameObject;
-    Node appleNode;
+    public Food food;
 
     [Header("Map Settings")]
     public int mapHeight = 15;
@@ -29,7 +27,7 @@ public class GameManager : MonoBehaviour
     List<Node> avaliableNodes = new List<Node>();
 
     [Header("Camera Settings")]
-    public Transform camera;
+    public Transform cameraHolder;
 
     [Header("UI Settings")]
     public Text scoreText;
@@ -53,7 +51,7 @@ public class GameManager : MonoBehaviour
         CreateMap();
         playerSnake.CreateSnake();
         PlaceCamera();
-        CreateApple();
+        food.CreateFood();
         playerSnake.targetDirection = Snake.Direction.right;
         isGameOver = false;
         score = 0;
@@ -66,8 +64,8 @@ public class GameManager : MonoBehaviour
             Destroy(mapGameObject);
         if (playerSnake != null)
             Destroy(playerSnake.snakeGameObject);
-        if (appleGameObject != null)
-            Destroy(appleGameObject);
+        if (food.foodGameObject != null)
+            Destroy(food.foodGameObject);
         foreach (var t in playerSnake.tail)
         {
             if (t != null)
@@ -78,15 +76,6 @@ public class GameManager : MonoBehaviour
         if (playerSnake != null)
             Destroy(playerSnake.tailParent);
         mapGrid = null;
-    }
-
-    void CreateApple()
-    {
-        appleGameObject = new GameObject("Apple");
-        SpriteRenderer appleRenderer = appleGameObject.AddComponent<SpriteRenderer>();
-        appleRenderer.sprite = CreateSprite(appleColor);
-        appleRenderer.sortingOrder = 1;
-        RandomlyPlaceApple();
     }
 
     void CreateMap()
@@ -149,7 +138,7 @@ public class GameManager : MonoBehaviour
         Node n = GetNode(mapWidth / 2, mapHeight / 2);
         Vector3 v = n.worldPosition;
         v += Vector3.one * .5f;
-        camera.position = v;
+        cameraHolder.position = v;
     }
 
     public Sprite CreateSprite(Color targerColor)
@@ -162,12 +151,9 @@ public class GameManager : MonoBehaviour
         return Sprite.Create(texture, rect, Vector2.one * .5f, 1, 0, SpriteMeshType.FullRect);
     }
 
-    public void RandomlyPlaceApple()
+    public void RespawnFood()
     {
-        int random = Random.Range(0, avaliableNodes.Count);
-        Node node = avaliableNodes[random];
-        PlacePLayerObject(appleGameObject, node.worldPosition);
-        appleNode = node;
+        food.RandomlyPlaceFood();
     }
 
     public List<Node> GetAvaliableNodes()
@@ -175,9 +161,9 @@ public class GameManager : MonoBehaviour
         return avaliableNodes;
     }
 
-    public Node GetAppleNode()
+    public Node GetFoodNode()
     {
-        return appleNode;
+        return food.GetFoodNode();
     }
 
     public Node GetNode(int x, int y)

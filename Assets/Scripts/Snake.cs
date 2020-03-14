@@ -187,7 +187,7 @@ public class Snake : MonoBehaviour
             else
             {
                 bool score = false;
-                if (targetNode == gameManager.GetAppleNode())
+                if (targetNode == gameManager.GetFoodNode())
                 {
                     score = true;
                 }
@@ -211,7 +211,7 @@ public class Snake : MonoBehaviour
                     gameManager.IncreaseScore();
                     if (gameManager.GetAvaliableNodes().Count > 0)
                     {
-                        gameManager.RandomlyPlaceApple();
+                        gameManager.RespawnFood();
                     }
                     else
                     {
