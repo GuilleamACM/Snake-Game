@@ -9,11 +9,15 @@ public class Snake : MonoBehaviour
     public Color snakeColor2;
     [Range(0, 1)] public float moveRate = 0.5f;
 
-    GameObject snakeGameObject;
-    GameObject tailParent;
+    [System.NonSerialized]
+    public GameObject snakeGameObject;
+    [System.NonSerialized]
+    public GameObject tailParent;
+    [System.NonSerialized]
+    public List<SpecialNode> tail = new List<SpecialNode>();
+
     Node playerCurrentNode;
-    List<SpecialNode> tail = new List<SpecialNode>();
-    Direction targetDirection;
+    public Direction targetDirection;
     Direction currentDirection;
     bool up, left, right, down;
     float timer;
@@ -34,16 +38,34 @@ public class Snake : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        GetInput();
-        SetPlayerDirection();
-
-        timer += Time.deltaTime;
-        if (timer > moveRate)
+        if (gameManager.isGameOver)
         {
-            timer = 0;
-            currentDirection = targetDirection;
-            MovePlayer();
+            if (Input.GetKey(KeyCode.R))
+                gameManager.onStart.Invoke();
+            return;
         }
+        
+        GetInput();
+        if (gameManager.isFirstInput)
+        {
+            SetPlayerDirection();
+            timer += Time.deltaTime;
+            if (timer > moveRate)
+            {
+                timer = 0;
+                currentDirection = targetDirection;
+                MovePlayer();
+            }
+        }
+        else
+        {
+            if(up || down || left || right)
+            {
+                gameManager.isFirstInput = true;
+                gameManager.firstInput.Invoke();
+            }
+        }
+        
     }
 
     public void CreateSnake()
@@ -160,7 +182,7 @@ public class Snake : MonoBehaviour
         {
             if (isTailNode(targetNode))
             {
-                //GameOver
+                gameManager.onGameOver.Invoke();
             }
             else
             {
@@ -186,6 +208,7 @@ public class Snake : MonoBehaviour
 
                 if (score)
                 {
+                    gameManager.IncreaseScore();
                     if (gameManager.GetAvaliableNodes().Count > 0)
                     {
                         gameManager.RandomlyPlaceApple();
@@ -199,7 +222,7 @@ public class Snake : MonoBehaviour
         }
         else
         {
-            //Game Over
+            gameManager.onGameOver.Invoke();
         }
     }
 

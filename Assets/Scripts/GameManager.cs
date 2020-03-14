@@ -1,11 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
     [Header("Player Settigns")]
     public Snake playerSnake;
+    public bool isGameOver;
+    public bool isFirstInput;
     int score;
     int highScore;
 
@@ -27,21 +31,53 @@ public class GameManager : MonoBehaviour
     [Header("Camera Settings")]
     public Transform camera;
 
-    public enum Direction
-    {
-        up,
-        down,
-        left,
-        right
-    }
+    [Header("UI Settings")]
+    public Text scoreText;
+    public Text highScoreText;
+
+    [Header("Game Events")]
+    public UnityEvent onStart;
+    public UnityEvent onScore;
+    public UnityEvent firstInput;
+    public UnityEvent onGameOver;
 
     // Start is called before the first frame update
     void Start()
     {
+        onStart.Invoke();
+    }
+
+    public void StartNewGame()
+    {
+        ClearReferences();
         CreateMap();
         playerSnake.CreateSnake();
         PlaceCamera();
         CreateApple();
+        playerSnake.targetDirection = Snake.Direction.right;
+        isGameOver = false;
+        score = 0;
+        UpdateScoreUI();
+    }
+
+    public void ClearReferences()
+    {
+        if(mapGameObject != null)
+            Destroy(mapGameObject);
+        if (playerSnake != null)
+            Destroy(playerSnake.snakeGameObject);
+        if (appleGameObject != null)
+            Destroy(appleGameObject);
+        foreach (var t in playerSnake.tail)
+        {
+            if (t != null)
+                Destroy(t.nodeGameObject);
+        }
+        playerSnake.tail.Clear();
+        avaliableNodes.Clear();
+        if (playerSnake != null)
+            Destroy(playerSnake.tailParent);
+        mapGrid = null;
     }
 
     void CreateApple()
@@ -157,5 +193,27 @@ public class GameManager : MonoBehaviour
     {
         pos += Vector3.one * .5f;
         obj.transform.position = pos;
+    }
+
+    public void IncreaseScore()
+    {
+        score++;
+        if (score > highScore)
+        {
+            highScore = score;
+        }
+        onScore.Invoke();
+    }
+
+    public void UpdateScoreUI()
+    {
+        scoreText.text = score.ToString();
+        highScoreText.text = highScore.ToString();
+    }
+
+    public void GameOver()
+    {
+        isGameOver = true;
+        isFirstInput = false;
     }
 }
