@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
 
 public class Food : MonoBehaviour
 {
@@ -21,6 +22,8 @@ public class Food : MonoBehaviour
         foodGameObject = Instantiate(foodGameObject);
         foodCreated = true;
         RandomlyPlaceFood();
+        Tween foodTween = foodGameObject.transform.DOShakeScale(1, .5f, 10).SetLoops(-1);
+        foodTween.Play();
     }
 
     public void RandomlyPlaceFood()
