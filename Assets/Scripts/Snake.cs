@@ -17,6 +17,7 @@ public class Snake : MonoBehaviour
     public List<SpecialNode> tail = new List<SpecialNode>();
 
     Node playerCurrentNode;
+    [System.NonSerialized]
     public Direction targetDirection;
     Direction currentDirection;
     bool up, left, right, down;
