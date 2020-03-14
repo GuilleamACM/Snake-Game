@@ -9,6 +9,7 @@ public class Snake : MonoBehaviour
     public Color snakeColor1;
     public Color snakeColor2;
     [Range(0, 1)] public float moveRate = 0.5f;
+    public ParticleSystem particle;
 
     [System.NonSerialized]
     public GameObject snakeGameObject;
@@ -250,6 +251,11 @@ public class Snake : MonoBehaviour
         }
         return specialNode;
 
+    }
+
+    public void MoveParticle()
+    {
+        particle.transform.position = playerCurrentNode.worldPosition + Vector3.one * .5f;
     }
 
     void MoveTail()
