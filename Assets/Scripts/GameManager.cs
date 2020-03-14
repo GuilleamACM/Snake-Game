@@ -6,6 +6,8 @@ public class GameManager : MonoBehaviour
 {
     [Header("Player Settigns")]
     public Snake playerSnake;
+    int score;
+    int highScore;
 
     [Header("Props Settings")]
     public Color appleColor = Color.red;
@@ -32,7 +34,7 @@ public class GameManager : MonoBehaviour
         left,
         right
     }
-    #region Initialization
+
     // Start is called before the first frame update
     void Start()
     {
@@ -113,9 +115,7 @@ public class GameManager : MonoBehaviour
         v += Vector3.one * .5f;
         camera.position = v;
     }
-    #endregion
 
-    #region Utilities
     public Sprite CreateSprite(Color targerColor)
     {
         Texture2D texture = new Texture2D(1, 1);
@@ -123,14 +123,14 @@ public class GameManager : MonoBehaviour
         texture.SetPixel(0, 0, targerColor);
         texture.Apply();
         Rect rect = new Rect(0, 0, 1, 1);
-        return Sprite.Create(texture, rect, Vector2.zero, 1, 0, SpriteMeshType.FullRect);
+        return Sprite.Create(texture, rect, Vector2.one * .5f, 1, 0, SpriteMeshType.FullRect);
     }
 
     public void RandomlyPlaceApple()
     {
-        int random = Random.RandomRange(0, avaliableNodes.Count);
+        int random = Random.Range(0, avaliableNodes.Count);
         Node node = avaliableNodes[random];
-        appleGameObject.transform.position = node.worldPosition;
+        PlacePLayerObject(appleGameObject, node.worldPosition);
         appleNode = node;
     }
 
@@ -152,5 +152,10 @@ public class GameManager : MonoBehaviour
         }
         return mapGrid[x, y];
     }
-    #endregion
+
+    public void PlacePLayerObject(GameObject obj, Vector3 pos)
+    {
+        pos += Vector3.one * .5f;
+        obj.transform.position = pos;
+    }
 }

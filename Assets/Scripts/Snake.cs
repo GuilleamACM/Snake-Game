@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Snake : MonoBehaviour
 {
-    [Header("Player Settigns")]
+    [Header("Snake Settigns")]
     public Color snakeColor1;
     public Color snakeColor2;
     [Range(0, 1)] public float moveRate = 0.5f;
@@ -16,7 +16,6 @@ public class Snake : MonoBehaviour
     Direction playerCurrentDirection;
     bool up, left, right, down;
     float timer;
-    int snakeLength = 0;
     GameManager gameManager;
     public enum Direction
     {
@@ -26,9 +25,23 @@ public class Snake : MonoBehaviour
         right
     }
 
-    private void Awake()
+    void Awake()
     {
         gameManager = FindObjectOfType<GameManager>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        GetInput();
+        SetPlayerDirection();
+
+        timer += Time.deltaTime;
+        if (timer > moveRate)
+        {
+            timer = 0;
+            MovePlayer();
+        }
     }
 
     public void CreateSnake()
@@ -38,7 +51,8 @@ public class Snake : MonoBehaviour
         playerRender.sprite = gameManager.CreateSprite(snakeColor1);
         playerRender.sortingOrder = 1;
         playerCurrentNode = gameManager.GetNode(3, 3);
-        snakeGameObject.transform.position = playerCurrentNode.worldPosition;
+        gameManager.PlacePLayerObject(snakeGameObject, playerCurrentNode.worldPosition);
+        snakeGameObject.transform.localScale = Vector3.one * 1.2f;
         tailParent = new GameObject("tailParent");
     }
 
@@ -54,19 +68,51 @@ public class Snake : MonoBehaviour
     {
         if (up)
         {
-            playerCurrentDirection = Direction.up;
+            if(!isOpposite(Direction.up))
+                playerCurrentDirection = Direction.up;
         }
         else if (down)
         {
-            playerCurrentDirection = Direction.down;
+            if (!isOpposite(Direction.down))
+                playerCurrentDirection = Direction.down;
         }
         else if (left)
         {
-            playerCurrentDirection = Direction.left;
+            if (!isOpposite(Direction.left))
+                playerCurrentDirection = Direction.left;
         }
         else if (right)
         {
-            playerCurrentDirection = Direction.right;
+            if (!isOpposite(Direction.right))
+                playerCurrentDirection = Direction.right;
+        }
+    }
+    
+    bool isOpposite(Direction d)
+    {
+        switch (d)
+        {
+            default:
+            case Direction.up:
+                if (playerCurrentDirection == Direction.down)
+                    return true;
+                else
+                    return false;
+            case Direction.down:
+                if (playerCurrentDirection == Direction.up)
+                    return true;
+                else
+                    return false;
+            case Direction.left:
+                if (playerCurrentDirection == Direction.right)
+                    return true;
+                else
+                    return false;
+            case Direction.right:
+                if (playerCurrentDirection == Direction.left)
+                    return true;
+                else
+                    return false;
         }
     }
 
@@ -100,18 +146,24 @@ public class Snake : MonoBehaviour
                 score = true;
             }
 
-            gameManager.GetAvaliableNodes().Remove(playerCurrentNode);
-            snakeGameObject.transform.position = targetNode.worldPosition;
-            playerCurrentNode = targetNode;
-            gameManager.GetAvaliableNodes().Add(playerCurrentNode);
+            Node previousNode = playerCurrentNode;
+            gameManager.GetAvaliableNodes().Add(previousNode);
+         
+            if (score)
+            {
+                tail.Add(CreateTailNode(previousNode.x, previousNode.y));
+                gameManager.GetAvaliableNodes().Remove(previousNode);
+            }
 
-            //Move tail
+            MoveTail();
+            gameManager.PlacePLayerObject(snakeGameObject, targetNode.worldPosition);
+            playerCurrentNode = targetNode;
+            gameManager.GetAvaliableNodes().Remove(playerCurrentNode);
 
             if (score)
             {
                 if (gameManager.GetAvaliableNodes().Count > 0)
                 {
-                    snakeLength++;
                     gameManager.RandomlyPlaceApple();
                 }
                 else
@@ -130,11 +182,13 @@ public class Snake : MonoBehaviour
     {
         SpecialNode specialNode = new SpecialNode();
         specialNode.node = gameManager.GetNode(x, y);
-        specialNode.nodeGameObject = new GameObject();
+        specialNode.nodeGameObject = new GameObject("Tail " + tail.Count);
         specialNode.nodeGameObject.transform.parent = tailParent.transform;
         specialNode.nodeGameObject.transform.position = specialNode.node.worldPosition;
+        specialNode.nodeGameObject.transform.localScale = Vector3.one * .95f;
         SpriteRenderer r = specialNode.nodeGameObject.AddComponent<SpriteRenderer>();
-        if (snakeLength % 2 == 0)
+        r.sortingOrder = 1;
+        if (tail.Count % 2 == 0)
         {
             r.sprite = gameManager.CreateSprite(snakeColor2);
         }
@@ -146,17 +200,28 @@ public class Snake : MonoBehaviour
 
     }
 
-    // Update is called once per frame
-    void Update()
+    void MoveTail()
     {
-        GetInput();
-        SetPlayerDirection();
-
-        timer += Time.deltaTime;
-        if (timer > moveRate)
+        Node previousNode = null;
+        for (int i = 0; i < tail.Count; i++)
         {
-            timer = 0;
-            MovePlayer();
+            SpecialNode specialNode = tail[i];
+            gameManager.GetAvaliableNodes().Add(specialNode.node);
+
+            if(i == 0)
+            {
+                previousNode = specialNode.node;
+                specialNode.node = playerCurrentNode;
+            }
+            else
+            {
+                Node prev = specialNode.node;
+                specialNode.node = previousNode;
+                previousNode = prev;
+            }
+
+            gameManager.GetAvaliableNodes().Remove(specialNode.node);
+            gameManager.PlacePLayerObject(specialNode.nodeGameObject, specialNode.node.worldPosition);            
         }
     }
 }
