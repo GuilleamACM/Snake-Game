@@ -183,12 +183,18 @@ public class Snake : MonoBehaviour
         Node targetNode = gameManager.GetNode(playerCurrentNode.x + x, playerCurrentNode.y + y);
         if (targetNode != null)
         {
-            if (isTailNode(targetNode))
+            if (!gameManager.isPowerUpActive)
             {
-                gameManager.onGameOver.Invoke();
+                if (isTailNode(targetNode))
+                {
+                    gameManager.onGameOver.Invoke();
+                }
+                if (gameManager.isTrapNode(targetNode))
+                    gameManager.onGameOver.Invoke();
             }
-            if (gameManager.isTrapNode(targetNode))
-                gameManager.onGameOver.Invoke();
+           
+            if (gameManager.actualStar.GetComponent<Star>().isStarNode(targetNode))
+                gameManager.ActivatePowerUp();
 
             else
             {
@@ -243,6 +249,10 @@ public class Snake : MonoBehaviour
         Tween tailTween = specialNode.nodeGameObject.transform.DOScale(Vector3.one * .95f, 1).SetEase(Ease.OutElastic);
         tailTween.Play();
         SpriteRenderer r = specialNode.nodeGameObject.AddComponent<SpriteRenderer>();
+        if (gameManager.isPowerUpActive)
+        {
+            r.DOFade(0.4f, 0.2f);
+        }
         r.sortingOrder = 1;
         if (tail.Count % 2 == 0)
         {

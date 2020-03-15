@@ -392,10 +392,11 @@ MonoBehaviour:
   playerSnake: {fileID: 193314114}
   isGameOver: 0
   isFirstInput: 0
-  pointsToSpawnTrap: 10
+  pointsToSpawnTrap: 6
   trapColor: {r: 0, g: 0, b: 0, a: 1}
   particle: {fileID: 1036779336}
   food: {fileID: 193314115}
+  star: {fileID: 1795711339010043294, guid: a9ce5fec71134504198e5ea0652824a1, type: 3}
   mapHeight: 14
   mapWidth: 19
   mapColor1: {r: 0.67058825, g: 0.8980393, b: 0.3254902, a: 1}
@@ -496,6 +497,17 @@ MonoBehaviour:
       - m_Target: {fileID: 1067453832}
         m_MethodName: SetActive
         m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 193314112}
+        m_MethodName: SetStarActive
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     public Snake playerSnake;
     public bool isGameOver;
     public bool isFirstInput;
+    public bool isPowerUpActive;
     int score;
     int highScore;
 
@@ -20,6 +21,9 @@ public class GameManager : MonoBehaviour
     public Color trapColor = Color.black;
     public ParticleSystem particle;
     public Food food;
+    public GameObject star;
+    [System.NonSerialized]
+    public GameObject actualStar;
 
     [Header("Map Settings")]
     public int mapHeight = 15;
@@ -62,6 +66,9 @@ public class GameManager : MonoBehaviour
         isGameOver = false;
         score = 0;
         UpdateScoreUI();
+        actualStar = Instantiate(star, Vector3.one * 100, Quaternion.identity);
+        actualStar.GetComponent<Star>().particle = particle;
+        actualStar.SetActive(false);
     }
 
     public void ClearReferences()
@@ -72,6 +79,8 @@ public class GameManager : MonoBehaviour
             Destroy(playerSnake.snakeGameObject);
         if (food.foodCreated)
             Destroy(food.foodGameObject);
+        if (actualStar != null)
+            Destroy(actualStar);
         foreach (var t in playerSnake.tail)
         {
             if (t != null)
@@ -232,7 +241,7 @@ public class GameManager : MonoBehaviour
             trap.node = GetAvaliableNodes()[random];
             traps.Add(trap);
             avaliableNodes.Remove(trap.node);
-            PlacePLayerObject(particle.gameObject, trap.node.worldPosition);
+            //PlacePLayerObject(particle.gameObject, trap.node.worldPosition);
             PlacePLayerObject(trap.nodeGameObject, trap.node.worldPosition);
             trap.nodeGameObject.transform.localScale = Vector3.zero;
             Tween trapTween = trap.nodeGameObject.transform.DOScale(Vector3.one, 1).SetEase(Ease.OutElastic);
@@ -240,7 +249,7 @@ public class GameManager : MonoBehaviour
             SpriteRenderer r = trap.nodeGameObject.AddComponent<SpriteRenderer>();
             r.sortingOrder = 1;
             r.sprite = CreateSprite(trapColor);
-            particle.Play();
+            //particle.Play();
         }
     }
 
@@ -254,5 +263,37 @@ public class GameManager : MonoBehaviour
             }
         }
         return false;
+    }
+
+    public void SetStarActive()
+    {
+        actualStar.SetActive(true);
+    }
+
+    public void ActivatePowerUp()
+    {
+        foreach (var tail in playerSnake.tail)
+        {
+            tail.nodeGameObject.GetComponent<SpriteRenderer>().DOFade(0.4f, 0.2f);
+        }
+        foreach (var trap in traps)
+        {
+            trap.nodeGameObject.GetComponent<SpriteRenderer>().DOFade(0.4f, 0.2f);
+        }
+        actualStar.GetComponent<Star>().PickUpStar();
+        isPowerUpActive = true;
+    }
+
+    public void DeactivatePowerUp()
+    {
+        foreach (var tail in playerSnake.tail)
+        {
+            tail.nodeGameObject.GetComponent<SpriteRenderer>().DOFade(1f, 0.2f);
+        }
+        foreach (var trap in traps)
+        {
+            trap.nodeGameObject.GetComponent<SpriteRenderer>().DOFade(1f, 0.2f);
+        }
+        isPowerUpActive = false;
     }
 }
