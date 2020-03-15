@@ -17,7 +17,7 @@ public class Star : MonoBehaviour
     private float timeUntilVanish;
     private float remaingPowerUpTime;
     SpecialNode star;
-
+    bool playOnce;
     GameManager gm;
 
     void Awake()
@@ -43,8 +43,18 @@ public class Star : MonoBehaviour
 
         if (isPowerUpActive)
         {
+            if (remaingPowerUpTime <= 1.7f)
+            {
+                if (!playOnce)
+                {
+                    gm.PowerUpEndingWaring();
+                    playOnce = true;
+                }
+            }
+
             if (remaingPowerUpTime <= 0f)
                 DeactivatePowerUp();
+            
             remaingPowerUpTime -= Time.deltaTime;
         }
 
@@ -106,6 +116,7 @@ public class Star : MonoBehaviour
         gm.DeactivatePowerUp();
         remaingPowerUpTime = powerUpTime;
         isPowerUpActive = false;
+        playOnce = false;
     }
 
 }

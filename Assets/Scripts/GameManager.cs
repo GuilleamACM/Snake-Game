@@ -52,6 +52,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        DOTween.SetTweensCapacity(3215, 1950);
         onStart.Invoke();
     }
 
@@ -205,7 +206,7 @@ public class GameManager : MonoBehaviour
 
     public void IncreaseScore()
     {
-        score++;
+        score += 10;
         if (score > highScore)
         {
             highScore = score;
@@ -291,12 +292,32 @@ public class GameManager : MonoBehaviour
     {
         foreach (var tail in playerSnake.tail)
         {
-            tail.nodeGameObject.GetComponent<SpriteRenderer>().DOFade(1f, 0.2f);
+            tail.nodeGameObject.GetComponent<SpriteRenderer>().DOFade(1f, 0f);
         }
         foreach (var trap in traps)
         {
-            trap.nodeGameObject.GetComponent<SpriteRenderer>().DOFade(1f, 0.2f);
+            trap.nodeGameObject.GetComponent<SpriteRenderer>().DOFade(1f, 0f);
         }
         isPowerUpActive = false;
+    }
+
+    public void PowerUpEndingWaring()
+    {
+        foreach (var tail in playerSnake.tail)
+        {
+            Sequence tailSequence = DOTween.Sequence();
+            tailSequence.SetLoops(3);
+            tailSequence.Append(tail.nodeGameObject.GetComponent<SpriteRenderer>().DOFade(1f, 0.25f));
+            tailSequence.Append(tail.nodeGameObject.GetComponent<SpriteRenderer>().DOFade(0.4f, 0.25f));
+            tailSequence.Play();
+        }
+        foreach (var trap in traps)
+        {
+            Sequence trapSequence = DOTween.Sequence();
+            trapSequence.SetLoops(3);
+            trapSequence.Append(trap.nodeGameObject.GetComponent<SpriteRenderer>().DOFade(1f, 0.25f));
+            trapSequence.Append(trap.nodeGameObject.GetComponent<SpriteRenderer>().DOFade(0.4f, 0.25f));
+            trapSequence.Play();
+        }
     }
 }
