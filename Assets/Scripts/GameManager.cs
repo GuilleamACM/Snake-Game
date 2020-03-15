@@ -73,6 +73,7 @@ public class GameManager : MonoBehaviour
 
     public void ClearReferences()
     {
+        DeactivatePowerUp();
         if(mapGameObject != null)
             Destroy(mapGameObject);
         if (playerSnake != null)

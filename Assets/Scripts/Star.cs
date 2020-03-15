@@ -69,8 +69,8 @@ public class Star : MonoBehaviour
         particle.Play();
         Sequence starSequence = DOTween.Sequence();
         starSequence.SetLoops(-1);
-        starSequence.Append(this.transform.DOShakeScale(1, .5f, 10));
-        starSequence.Append(this.transform.DOScale(Vector3.one, 0.2f));
+        starSequence.Append(this.transform.DOShakeScale(.5f, .5f, 10));
+        starSequence.Append(this.transform.DOScale(Vector3.one * 1.5f, 0.2f));
         starSequence.Play();
         timeUntilSpawn = timeToSpawn;
         isSpawned = true;
