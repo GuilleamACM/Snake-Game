@@ -242,7 +242,6 @@ public class GameManager : MonoBehaviour
             trap.node = GetAvaliableNodes()[random];
             traps.Add(trap);
             avaliableNodes.Remove(trap.node);
-            //PlacePLayerObject(particle.gameObject, trap.node.worldPosition);
             PlacePLayerObject(trap.nodeGameObject, trap.node.worldPosition);
             trap.nodeGameObject.transform.localScale = Vector3.zero;
             Tween trapTween = trap.nodeGameObject.transform.DOScale(Vector3.one, 1).SetEase(Ease.OutElastic);
@@ -250,7 +249,10 @@ public class GameManager : MonoBehaviour
             SpriteRenderer r = trap.nodeGameObject.AddComponent<SpriteRenderer>();
             r.sortingOrder = 1;
             r.sprite = CreateSprite(trapColor);
-            //particle.Play();
+            if (isPowerUpActive)
+            {
+                r.DOFade(0.4f, 0.2f);
+            }
         }
     }
 

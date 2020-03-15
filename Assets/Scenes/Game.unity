@@ -152,6 +152,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scoreSound: {fileID: 8300000, guid: 5c7cbc76600c93c4b806f4b5617d48ed, type: 3}
   dieSound: {fileID: 8300000, guid: d2cd96d657e89714f8d36ba9a1b566b3, type: 3}
+  gameBGM: {fileID: 8300000, guid: d3a241e8e27e5e64b98e0d8d38d4c8fc, type: 3}
 --- !u!4 &34781310
 Transform:
   m_ObjectHideFlags: 0
